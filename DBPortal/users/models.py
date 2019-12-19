@@ -20,24 +20,20 @@ class City(models.Model):
         return self.name
 
 
-class StaffDetail(models.Model):
-    aadhar_no = models.CharField(max_length=12)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    DOB = models.DateField(max_length=8, null=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    state = models.ForeignKey(State, on_delete=models.CASCADE, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
+class AadharNo(models.Model):
+    number = models.CharField(max_length=12)
 
     def __str__(self):
-        return self.first_name
+        return self.number
 
 
 class DBerDetail(models.Model):
-    aadhar_no = models.CharField(max_length=12)
+    aadhar_no = models.OneToOneField(AadharNo, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     DOB = models.DateField()
+    email_address = models.EmailField(null=True)
+    linked = models.BooleanField(default=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     state = models.ForeignKey(State, on_delete=models.CASCADE, null=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)

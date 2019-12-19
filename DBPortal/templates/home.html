@@ -6,8 +6,15 @@
     </head>
     <body>
         <h1>Welcome to DBPortal!</h1>
-
-        <a href = {% url 'register_staff' %}> Register yourself as Staff!</a><br>
-        <a href = {% url 'register_dber' %}> Register yourself as DBer!</a>
+        {% if user.is_staff %}
+        <a href = {% url 'register_dber' %}> Register a DBer!</a><br>
+        {% else %}
+        <a href="{% url 'staff_login' %}"> Login as Staff </a><br>
+        <a href="{% url 'dber_login' %}"> Login as DBer </a><br>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <a href="{% url 'link_dber' %}">Link yourself as dber! </a><br>
+        <a href="{% url 'logout' %}"> Logout </a><br>
+        {% endif %}
     </body>
 </html>

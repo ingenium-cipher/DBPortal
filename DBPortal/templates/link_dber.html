@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <form method="post">
+            {% csrf_token %}
+            <label for="aadhar">Your Aadhar No </label>
+            <input type="text" name="aadhar" value="">
+            <label for="dber_email"> Enter your email address: </label>
+            <input type="email" name="dber_email" value=""><br>
+            <button type="submit"> Link! </button>
+        </form>
+    </body>
+</html>
