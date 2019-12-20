@@ -123,3 +123,12 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+SEND_GRID_API_KEY = os.getenv(
+    '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')
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'ayush_123'
+EMAIL_HOST_PASSWORD = 'ayush@123'
+EMAIL_PORT = 587

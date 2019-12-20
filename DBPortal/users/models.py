@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
+from rest_framework.permissions import IsAdminUser
 
 GENDER_CHOICES = (('M', 'Male'), ('F', 'Female'), ('O', 'Others'))
 
@@ -37,6 +38,16 @@ class DBerDetail(models.Model):
 
 class UserExcel(models.Model):
     file = models.FileField(upload_to='excel_sheets/')
+
+
+class StaffDetail(models.Model):
+
+    staff_user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email_address = models.EmailField(null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "{x} for city {y}".format(x=self.staff_user, y=self.city)
 
 
 # Create your models here.

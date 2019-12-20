@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="subject">Subject: </label><br>
+            <input type="text" name="subject" value="" required><br><br>
+            <label for="message">Email Description: </label><br>
+            <textarea name="message" rows="8" cols="80" required></textarea>
+            <h4>Send email to- </h4>
+            {% for user in users %}
+            <input type="checkbox" name="checkbox" value="{{ user.email_address }}" checked>{{ user }} - {{ user.email_address }} <br>
+            {% endfor %}
+
+            <br><br>
+            <h4>Sending via {{ from_email }} by {{ staff }}</h4><br>
+
+            <button type="submit" > Send! </button>
+
+        </form>
+    </body>
+</html>

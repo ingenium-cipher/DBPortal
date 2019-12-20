@@ -9,6 +9,7 @@ from django.core import exceptions
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from django.core.mail import send_mail
 
 
 def home(request):
@@ -162,4 +163,126 @@ def change_password(request):
     return render(request, 'change_password.html', {
         'form': form
     })
+
+
+def email(request):
+    staff = StaffDetail.objects.get(staff_user=request.user)
+    users = DBerDetail.objects.filter(linked=True, city=staff.city)
+    recipient_list = []
+
+    from_email = request.user.email
+
+    if request.method == 'POST':
+
+        search = request.POST['search']
+        subject = request.POST['subject']
+        message = request.POST['message']
+        checkbox = request.POST.getlist('checkbox')
+        checkbox = tuple(checkbox)
+
+        for i in range(0, len(checkbox)):
+            recipient_list.append(checkbox[i])
+
+        try:
+            user = DBerDetail.objects.filter(name=search, linked=True)
+        except exceptions.ObjectDoesNotExist:
+            messages.error(request, 'This DBer does not exist')
+
+        send_mail(subject, message, from_email, recipient_list)
+        return redirect('home')
+
+    context = {
+        'users': users,
+        'from_email': from_email,
+        'staff': staff,
+    }
+    return render(request, 'email.html', context)
+
+
+def send_dber_email(request):
+
+    dber = DBerDetail.objects.get(user_detail=request.user)
+    from_email = dber.email_address
+    to_email = []
+
+    context = {
+        'from_email': from_email,
+        'dber': dber,
+    }
+
+    if request.method == 'POST':
+
+        if 'sea' in request.POST:
+            search = request.POST['search']
+            print(search)
+
+            try:
+                global to_dber
+                to_dber = DBerDetail.objects.get(name=search, linked=True)
+                context['to_dber'] = to_dber
+                return render(request, 'send_dber_email.html', context)
+            except exceptions.ObjectDoesNotExist:
+                try:
+                    to_dber = DBerDetail.objects.get(aadhar_no=search, linked=True)
+                    context['to_dber'] = to_dber
+                    return render(request, 'send_dber_email.html', context)
+                except exceptions.ObjectDoesNotExist:
+                    try:
+                        to_dber = DBerDetail.objects.get(email_address=search, linked=True)
+                        context['to_dber'] = to_dber
+                        return render(request, 'send_dber_email.html', context)
+                    except exceptions.ObjectDoesNotExist:
+                        messages.error(request, 'This DBer does not exist')
+
+        elif 'sen' in request.POST:
+            subject = request.POST['subject']
+            message = request.POST['message']
+            to_email.append(to_dber.email_address)
+            send_mail(subject, message, from_email, to_email)
+            return redirect('home')
+
+    return render(request, 'send_dber_email.html', context)
+
+
+def send_staff_email(request):
+
+    global from_email
+    to_email = []
+
+    if request.user.is_staff:
+        from_email = request.user.email
+    else:
+        from_email = DBerDetail.objects.get(user_detail=request.user).email_address
+
+    context = {
+        'from_email': from_email,
+    }
+
+    if request.method == 'POST':
+
+        if 'sea' in request.POST:
+            search = request.POST['search']
+
+            try:
+                global staff
+                user_1 = User.objects.get(username=search)
+                staff = StaffDetail.objects.get(staff_user=user_1)
+                context['staff'] = staff
+                context['user_1'] = user_1
+                return render(request, 'send_staff_email.html', context)
+            except exceptions.ObjectDoesNotExist:
+                try:
+                    staff = StaffDetail.objects.get(email_address=search)
+                    return render(request, 'send_staff_email.html', context)
+                except exceptions.ObjectDoesNotExist:
+                    messages.error(request, 'This Staff does not exist')
+
+        elif 'sen' in request.POST:
+            subject = request.POST['subject']
+            message = request.POST['message']
+            to_email.append(staff.email_address)
+            send_mail(subject, message, from_email, to_email)
+            return redirect('home')
+
+    return render(request, 'send_staff_email.html', context)
 # Create your views here.

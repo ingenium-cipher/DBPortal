@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <form method="post">
+            {% csrf_token %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <label for="search"> Search Staff by Name, Email address: </label>
+            <input type="text" name="search">
+            <button type="submit" name="sea"> Search </button>
+            <br><br>
+
+            <h4>Send email to- </h4>
+            <h3>{{ user_1 }} - {{ staff.email_address }}</h3>
+            </form>
+            <form>
+                {% csrf_token %}
+            <label for="subject">Subject: </label><br>
+            <input type="text" name="subject" value="" required><br><br>
+            <label for="message">Email Description: </label><br>
+            <textarea name="message" rows="8" cols="80" required></textarea><br>
+
+
+            <h4>Sending via {{ from_email }} by {{ user }}</h4><br>
+            <button type="submit" name = "sen"> Send! </button>
+        </form>
+    </body>
+</html>
