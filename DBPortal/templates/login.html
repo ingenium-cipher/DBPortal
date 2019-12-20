@@ -8,10 +8,10 @@
         <form class="" method="post">
             {% csrf_token %}
             <label for="username">Username:</label><br>
-            <input type="text" name="username" value="">
+            <input type="text" name="username" value="" required>
             <br>
             <label for="password">Password</label><br>
-            <input type="password" name="password" value="">
+            <input type="password" name="password" value="" required>
             <button type="submit"> Login </button>
         </form>
     </body>

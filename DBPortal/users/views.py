@@ -136,7 +136,7 @@ def link_dber(request):
             dber.save()
 
         else:
-            return HttpResponse("<h1> {{ form.errors }}</h1>")
+            return render(request, 'error.html', {'form': form})
 
         return redirect('home')
 
