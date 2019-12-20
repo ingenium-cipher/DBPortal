@@ -10,4 +10,5 @@ urlpatterns = [
     path('dber_login/', views.dber_login, name='dber_login'),
     path('logout/', views.user_logout, name='logout'),
     path('link_dber/', views.link_dber, name='link_dber'),
+    path('change_password/', views.change_password, name='change_password'),
 ]

@@ -20,17 +20,10 @@ class City(models.Model):
         return self.name
 
 
-class AadharNo(models.Model):
-    number = models.CharField(max_length=12)
-
-    def __str__(self):
-        return self.number
-
-
 class DBerDetail(models.Model):
-    aadhar_no = models.OneToOneField(AadharNo, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    aadhar_no = models.CharField(max_length=12)
+    user_detail = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=50, null=True)
     DOB = models.DateField()
     email_address = models.EmailField(null=True)
     linked = models.BooleanField(default=False)
@@ -39,7 +32,7 @@ class DBerDetail(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.first_name
+        return self.name
 
 
 class UserExcel(models.Model):

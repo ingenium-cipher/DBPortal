@@ -9,6 +9,7 @@
             {% csrf_token %}
             <label for="aadhar">Your Aadhar No </label>
             <input type="text" name="aadhar" value="">
+            {{ form.as_p }}
             <label for="dber_email"> Enter your email address: </label>
             <input type="email" name="dber_email" value=""><br>
             <button type="submit"> Link! </button>
