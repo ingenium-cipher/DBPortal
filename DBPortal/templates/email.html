@@ -12,7 +12,7 @@
             <input type="text" name="subject" value="" required><br><br>
             <label for="message">Email Description: </label><br>
             <textarea name="message" rows="8" cols="80" required></textarea>
-            <h4>Send email to- </h4>
+            <h4>Send email to dbers of your city- </h4>
             {% for user in users %}
             <input type="checkbox" name="checkbox" value="{{ user.email_address }}" checked>{{ user }} - {{ user.email_address }} <br>
             {% endfor %}
