@@ -21,9 +21,9 @@
             <br><br>
 
             <h4>Send email to- </h4>
-            <h3>{{ user_1 }} - {{ staff.email_address }}</h3>
+            <h3>{{ staff }} - {{ staff.email_address }}</h3>
             </form>
-            <form>
+            <form method="post" >
                 {% csrf_token %}
             <label for="subject">Subject: </label><br>
             <input type="text" name="subject" value="" required><br><br>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <form method="post" id="personForm" data-cities-url="{% url 'ajax_load_cities' %}" novalidate enctype="multipart/form-data">
+           {% csrf_token %}
+           {% if messages %}
+           <ul class="messages">
+               {% for message in messages %}
+               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+               {% endfor %}
+           </ul>
+           {% endif %}
+
+             {{ form.as_p }}
+
+           <button type="submit">Update!</button>
+         </form>
+
+         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+         <script>
+           $("#id_state").change(function () {
+             var url = $("#personForm").attr("data-cities-url");  // get the url of the `load_cities` view
+             var stateId = $(this).val();  // get the selected state ID from the HTML input
+
+             $.ajax({                       // initialize an AJAX request
+               url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+               data: {
+                 'state': stateId       // add the state id to the GET parameters
+               },
+               success: function (data) {  // `data` is the return of the `load_cities` view function
+                  $("#id_city").html(data);  // replace the contents of the city input with the data that came from the server
+                }
+              });
+
+            });
+          </script>
+          <p><a href="{% url 'home' %}"> Return home </a></p>
+          </body>
+</html>

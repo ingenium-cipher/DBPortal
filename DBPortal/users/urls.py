@@ -13,4 +13,5 @@ urlpatterns = [
     path('email/', views.email, name='email'),
     path('send_dber_email', views.send_dber_email, name='send_dber_email'),
     path('send_staff_email', views.send_staff_email, name='send_staff_email'),
+    path('profile', views.profile, name='profile')
 ]

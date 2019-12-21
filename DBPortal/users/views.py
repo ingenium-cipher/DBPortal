@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -170,7 +171,7 @@ def email(request):
     users = DBerDetail.objects.filter(linked=True, city=staff.city)
     recipient_list = []
 
-    from_email = request.user.email
+    from_email = staff.email_address
 
     if request.method == 'POST':
 
@@ -201,13 +202,20 @@ def email(request):
 
 def send_dber_email(request):
 
-    dber = DBerDetail.objects.get(user_detail=request.user)
-    from_email = dber.email_address
+    if request.user.is_staff:
+        global user_1
+        global from_email
+        user_1 = StaffDetail.objects.get(staff_user=request.user)
+        from_email = user_1.email_address
+
+    else:
+        user_1 = DBerDetail.objects.get(user_detail=request.user)
+        from_email = user_1.email_address
     to_email = []
 
     context = {
         'from_email': from_email,
-        'dber': dber,
+        'user_1': user_1,
     }
 
     if request.method == 'POST':
@@ -265,14 +273,14 @@ def send_staff_email(request):
 
             try:
                 global staff
-                user_1 = User.objects.get(username=search)
-                staff = StaffDetail.objects.get(staff_user=user_1)
+                user = User.objects.get(username=search)
+                staff = StaffDetail.objects.get(staff_user=user)
                 context['staff'] = staff
-                context['user_1'] = user_1
                 return render(request, 'send_staff_email.html', context)
             except exceptions.ObjectDoesNotExist:
                 try:
                     staff = StaffDetail.objects.get(email_address=search)
+                    context['staff'] = staff
                     return render(request, 'send_staff_email.html', context)
                 except exceptions.ObjectDoesNotExist:
                     messages.error(request, 'This Staff does not exist')
@@ -280,9 +288,50 @@ def send_staff_email(request):
         elif 'sen' in request.POST:
             subject = request.POST['subject']
             message = request.POST['message']
+            print('hi')
             to_email.append(staff.email_address)
             send_mail(subject, message, from_email, to_email)
             return redirect('home')
 
     return render(request, 'send_staff_email.html', context)
+
+
+@login_required
+def profile(request):
+
+    if request.user.is_staff:
+        user_1 = StaffDetail.objects.get(staff_user=request.user)
+        form = StaffProfileForm(instance=user_1)
+        context = {
+            'user_1': user_1,
+            'form': form,
+        }
+
+        if request.method == 'POST':
+
+            form = StaffProfileForm(request.POST, instance=user_1)
+
+            if form.is_valid():
+                form.save()
+                # messages.success(request, 'Updated successfully!')
+                return redirect('home')
+
+    else:
+        user_1 = DBerDetail.objects.get(user_detail=request.user)
+        form = DBerProfileForm(instance=user_1)
+        context = {
+            'user_1': user_1,
+            'form': form,
+        }
+
+        if request.method == 'POST':
+
+            form = DBerProfileForm(request.POST, instance=user_1)
+
+            if form.is_valid():
+                form.save()
+                # messages.success(request, 'Updated successfully!')
+                return redirect('home')
+
+    return render(request, 'profile.html', context)
 # Create your views here.

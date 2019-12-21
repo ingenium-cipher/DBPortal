@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
 
-class StaffDetailForm(forms.ModelForm):
+class StaffProfileForm(forms.ModelForm):
 
     class Meta:
         model = StaffDetail
-        fields = ('staff_user', )
+        fields = ('staff_user', 'email_address', 'city')
 
 
 class DBerDetailForm(forms.ModelForm):
@@ -30,3 +30,10 @@ class DBerUserDetailForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'password1', 'password2')
+
+
+class DBerProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = DBerDetail
+        fields = ('aadhar_no', 'name', 'email_address', 'state', 'city')
