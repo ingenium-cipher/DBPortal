@@ -11,6 +11,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
+from DBPortal.settings import *
 
 
 def home(request):
@@ -32,7 +33,10 @@ def register_dber(request):
 
         elif e_form.is_valid():
             sa = e_form.save()
-            loc = ("/home/ayush/Desktop/github/DBPortal/DBPortal" + sa.file.url)
+            print(sa.file.url[6:])
+            print(MEDIA_ROOT)
+            # loc = ("/home/ayush/Desktop/github/DBPortal/DBPortal" + sa.file.url)
+            loc = (MEDIA_ROOT + sa.file.url[6:])
 
             wb = xlrd.open_workbook(loc)
             sheet = wb.sheet_by_index(0)
