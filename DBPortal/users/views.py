@@ -147,6 +147,7 @@ def link_dber(request):
             dber.user_detail = obj
             messages.success(request, f'Dber linked successfully!')
             dber.save()
+            return redirect('home')
 
     else:
         form = DBerUserDetailForm()
@@ -190,7 +191,7 @@ def email(request):
             recipient_list.append(checkbox[i])
 
         send_mail(subject, message, from_email, recipient_list)
-        messages.success(request, 'Emails sent successfully!')
+        messages.success(request, f'Emails sent successfully!')
         return redirect('home')
 
     context = {
@@ -241,14 +242,14 @@ def send_dber_email(request):
                         context['to_dber'] = to_dber
                         return render(request, 'send_dber_email.html', context)
                     except exceptions.ObjectDoesNotExist:
-                        messages.error(request, 'This DBer does not exist')
+                        messages.warning(request, f'This DBer does not exist')
 
         elif 'sen' in request.POST:
             subject = request.POST['subject']
             message = request.POST['message']
             to_email.append(to_dber.email_address)
             send_mail(subject, message, from_email, to_email)
-            messages.success(request, 'Email sent successfully!')
+            messages.success(request, f'Email sent successfully!')
             return redirect('home')
 
     return render(request, 'send_dber_email.html', context)
@@ -285,7 +286,7 @@ def send_staff_email(request):
                     context['staff'] = staff
                     return render(request, 'send_staff_email.html', context)
                 except exceptions.ObjectDoesNotExist:
-                    messages.error(request, 'This Staff does not exist')
+                    messages.warning(request, f'This Staff does not exist')
 
         elif 'sen' in request.POST:
             subject = request.POST['subject']
@@ -293,7 +294,7 @@ def send_staff_email(request):
             print('hi')
             to_email.append(staff.email_address)
             send_mail(subject, message, from_email, to_email)
-            messages.success(request, 'Email sent successfully!')
+            messages.success(request, f'Email sent successfully!')
             return redirect('home')
 
     return render(request, 'send_staff_email.html', context)
