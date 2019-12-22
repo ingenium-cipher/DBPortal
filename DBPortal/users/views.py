@@ -29,6 +29,7 @@ def register_dber(request):
         e_form = UserExcelForm(request.POST, request.FILES)
         if u_form.is_valid():
             u_form.save()
+            messages.success(request, f'DBer registered successfully!')
             return redirect('home')
 
         elif e_form.is_valid():
@@ -51,20 +52,17 @@ def register_dber(request):
                                           gender=sheet.cell_value(i, 3),
                                           state=state,
                                           city=city)
+            messages.success(request, f'DBer registered successfully!')
             return redirect('home')
 
-        elif not (u_form.is_valid() or e_form.is_valid()):
-            context = {
-                'form': u_form
-            }
-            return render(request, 'error.html', context)
-
-    u_form = DBerDetailForm()
-    e_form = UserExcelForm()
+    else:
+        u_form = DBerDetailForm()
+        e_form = UserExcelForm()
     context = {
         'u_form': u_form,
         'e_form': e_form,
     }
+
     return render(request, 'register.html', context)
 
 
@@ -85,10 +83,13 @@ def staff_login(request):
 
             if user.is_staff:
                 login(request, user)
+                messages.success(request, f'Login Successful')
                 return redirect('home')
 
             else:
-                return HttpResponse('<h1> You are not eligible to login as you are not a staff </h1> <br> <a href = "http://127.0.0.1:8000/"> Back to Home </a>')
+                # return HttpResponse('<h1> You are not eligible to login as you are not a staff </h1> <br> <a href = "http://127.0.0.1:8000/"> Back to Home </a>')
+                messages.warning(request, f'You are not eligible to login as you are not staff')
+                return redirect('staff_login')
     return render(request, 'login.html')
 
 
@@ -104,16 +105,19 @@ def dber_login(request):
             try:
                 DBerDetail.objects.get(user_detail=user)
                 login(request, user)
+                messages.success(request, f'Login Successful!')
                 return redirect('home')
 
             except exceptions.ObjectDoesNotExist:
-                return HttpResponse('<h1> You are not eligible to login due to following reasons </h1> <br> <ul> <li> Maybe because you are not a dber </li> <li> Maybe you are not linked as dber </li> </ul> <a href = "http://127.0.0.1:8000/"> Back to Home </a>')
-
+                # return HttpResponse('<h1> You are not eligible to login due to following reasons </h1> <br> <ul> <li> Maybe because you are not a dber </li> <li> Maybe you are not linked as dber </li> </ul> <a href = "http://127.0.0.1:8000/"> Back to Home </a>')
+                messages.warning(
+                    request, f'You are not able to login maybe because you are not dber or not linked as dber.')
     return render(request, 'login.html')
 
 
 def user_logout(request):
     logout(request)
+    messages.success(request, f'Logout successful')
     return redirect('home')
 
 
@@ -126,7 +130,9 @@ def link_dber(request):
         try:
             dber = DBerDetail.objects.get(aadhar_no=aadhar)
         except exceptions.ObjectDoesNotExist:
-            return HttpResponse("<h1> You are not registered!.. Please contact your staff immediately!</h1>")
+            # return HttpResponse("<h1> You are not registered!.. Please contact your staff immediately!</h1>")
+            messages.warning(request, f'You are not registered!.. Contact your staff immediately!')
+            return redirect('link_dber')
 
         dber = DBerDetail.objects.get(aadhar_no=aadhar)
         dber.linked = True
@@ -139,30 +145,26 @@ def link_dber(request):
             fo = form.save()
             obj = User.objects.get(username=fo)
             dber.user_detail = obj
+            messages.success(request, f'Dber linked successfully!')
             dber.save()
 
-        else:
-            return render(request, 'error.html', {'form': form})
-
-        return redirect('home')
-
-    form = DBerUserDetailForm()
+    else:
+        form = DBerUserDetailForm()
     context = {
         'form': form
     }
     return render(request, 'link_dber.html', context)
 
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
+            messages.success(request, f'Your password was successfully updated!')
             return redirect('home')
-        else:
-            messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'change_password.html', {
@@ -188,6 +190,7 @@ def email(request):
             recipient_list.append(checkbox[i])
 
         send_mail(subject, message, from_email, recipient_list)
+        messages.success(request, 'Emails sent successfully!')
         return redirect('home')
 
     context = {
@@ -245,6 +248,7 @@ def send_dber_email(request):
             message = request.POST['message']
             to_email.append(to_dber.email_address)
             send_mail(subject, message, from_email, to_email)
+            messages.success(request, 'Email sent successfully!')
             return redirect('home')
 
     return render(request, 'send_dber_email.html', context)
@@ -289,6 +293,7 @@ def send_staff_email(request):
             print('hi')
             to_email.append(staff.email_address)
             send_mail(subject, message, from_email, to_email)
+            messages.success(request, 'Email sent successfully!')
             return redirect('home')
 
     return render(request, 'send_staff_email.html', context)
@@ -311,7 +316,7 @@ def profile(request):
 
             if form.is_valid():
                 form.save()
-                # messages.success(request, 'Updated successfully!')
+                messages.success(request, f'Profile Updated successfully!')
                 return redirect('home')
 
     else:
@@ -328,7 +333,7 @@ def profile(request):
 
             if form.is_valid():
                 form.save()
-                # messages.success(request, 'Updated successfully!')
+                messages.success(request, f'Profile Updated successfully!')
                 return redirect('home')
 
     return render(request, 'profile.html', context)

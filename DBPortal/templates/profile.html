@@ -1,23 +1,12 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
-    <body>
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
         <form method="post" id="personForm" data-cities-url="{% url 'ajax_load_cities' %}" novalidate enctype="multipart/form-data">
            {% csrf_token %}
-           {% if messages %}
-           <ul class="messages">
-               {% for message in messages %}
-               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-               {% endfor %}
-           </ul>
-           {% endif %}
+           <h2>User Profile</h2>
+             {{ form|crispy }}
 
-             {{ form.as_p }}
-
-           <button type="submit">Update!</button>
+           <button class = "btn btn-success" type="submit">Update!</button>
          </form>
 
          <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -38,6 +27,7 @@
 
             });
           </script>
-          <p><a href="{% url 'home' %}"> Return home </a></p>
-          </body>
-</html>
+          <a href="{% url 'home' %}">
+              <button type="button" class = "btn btn-primary" name="button"> Home</button>
+          </a>
+{% endblock %}

@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
-    <body>
-        <form class="" method="post">
+{% extends 'base.html' %}
+{% block content %}
+        <form method="post">
             {% csrf_token %}
-            <label for="username">Username:</label><br>
-            <input type="text" name="username" value="" required>
-            <br>
+            <h2>User Login</h2>
+            <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username" value="" required>
+            </div>
+            <div class="form-group">
             <label for="password">Password</label><br>
-            <input type="password" name="password" value="" required>
-            <button type="submit"> Login </button>
-        </form>
-    </body>
-</html>
+            <input type="password" class = "form-control" name="password" value="" required>
+            </div>
+            <button type="submit" class = 'btn btn-success'> Login </button>
+
+
+
+{% endblock %}

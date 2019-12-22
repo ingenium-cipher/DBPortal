@@ -1,18 +1,21 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
-    <body>
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
         <form method="post">
             {% csrf_token %}
-            <label for="aadhar">Your Aadhar No </label>
-            <input type="text" name="aadhar" value="" required>
-            {{ form.as_p }}
-            <label for="dber_email"> Enter your email address: </label>
-            <input type="email" name="dber_email" value="" required><br>
-            <button type="submit"> Link! </button>
+            <h2>Linking DBer</h2>
+            <div class = "form-group">
+            <label for="aadhar">Your Aadhar No:  </label>
+            <input type="text" class="form-control" name="aadhar" value="" required>
+            </div>
+            {{ form|crispy }}
+            <div class="form-group">
+           <label for="exampleInputEmail1">Email address</label>
+           <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+           <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <button type="submit" class = "btn btn-success"> Link! </button>
         </form>
-    </body>
-</html>
+
+{% endblock %}

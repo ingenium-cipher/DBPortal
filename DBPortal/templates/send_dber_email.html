@@ -1,43 +1,32 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
-    <body>
+{% extends 'base.html' %}
+{% block content %}
         <form method="post">
             {% csrf_token %}
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
 
+            <div class="form-group">
             <label for="search"> Search DBer by Name, Aadhar No or email address: </label>
-            <input type="text" name="search">
-            <button type="submit" name="sea"> Search </button>
-            <br><br>
+            <input type="text" class="form-control" name="search">
+            </div>
+            <button type="submit" class = 'btn btn-info' name="sea"> Search </button>
             <h4>Send email to- </h4>
             <h3>{{ to_dber }} - {{ to_dber.email_address }}</h3>
-
             </form>
+            
             <form method="post">
                 {% csrf_token %}
-            <label for="subject">Subject: </label><br>
-            <input type="text" name="subject" value="" required><br><br>
-            <label for="message">Email Description: </label><br>
-            <textarea name="message" rows="8" cols="80" required></textarea>
+                <div class="form-group">
+            <label for="subject">Subject: </label>
+            <input type="text" class="form-control" name="subject" value="" required>
+            </div>
+            <div class="form-group">
+            <label for="message">Email Description: </label>
+            <textarea name="message" class="form-control" rows="8" cols="80" required></textarea>
+            </div>
 
 
-            <br><br>
-            <h4>Sending via {{ from_email }} by {{ user_1 }}</h4><br>
+            <h4>Sending via {{ from_email }} by {{ user_1 }}</h4>
 
             <button type="submit" name="sen"> Send! </button>
 
         </form>
-        <br>
-         <a href = "http://127.0.0.1:8000/"> Back to Home </a>
-    </body>
-</html>
+{% endblock %}
