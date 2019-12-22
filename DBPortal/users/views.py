@@ -175,7 +175,6 @@ def email(request):
 
     if request.method == 'POST':
 
-        search = request.POST['search']
         subject = request.POST['subject']
         message = request.POST['message']
         checkbox = request.POST.getlist('checkbox')
@@ -183,11 +182,6 @@ def email(request):
 
         for i in range(0, len(checkbox)):
             recipient_list.append(checkbox[i])
-
-        try:
-            user = DBerDetail.objects.filter(name=search, linked=True)
-        except exceptions.ObjectDoesNotExist:
-            messages.error(request, 'This DBer does not exist')
 
         send_mail(subject, message, from_email, recipient_list)
         return redirect('home')
