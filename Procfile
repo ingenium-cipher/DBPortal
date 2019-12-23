@@ -1,1 +1,1 @@
-web: gunicorn DBPortal.wsgi --log-file-
+web: gunicorn DBPortal.wsgi
