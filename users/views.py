@@ -28,11 +28,22 @@ def register_dber(request):
         u_form = DBerDetailForm(request.POST)
         e_form = UserExcelForm(request.POST, request.FILES)
         if u_form.is_valid():
+            aadhar = u_form.cleaned_data.get('aadhar_no')
+            dber = DBerDetail.objects.get(aadhar_no=aadhar)
+            if dber:
+                messages.warning(request, f'A dber with this Aadhar no already exists!')
+                return redirect('register_dber')
             u_form.save()
             messages.success(request, f'DBer registered successfully!')
             return redirect('home')
 
         elif e_form.is_valid():
+            aadhar = e_form.cleaned_data.get('aadhar_no')
+            dber = DBerDetail.objects.get(aadhar_no=aadhar)
+            if dber:
+                messages.warning(request, f'A dber with this Aadhar no already exists!')
+                return redirect('register_dber')
+
             sa = e_form.save()
             print(sa.file.url[6:])
             print(MEDIA_ROOT)
@@ -66,6 +77,7 @@ def register_dber(request):
                                           gender=sheet.cell_value(i, 3),
                                           state=state,
                                           city=city)
+
             messages.success(request, f'DBer registered successfully!')
             return redirect('home')
 
