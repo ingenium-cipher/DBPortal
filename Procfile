@@ -1,2 +1,1 @@
-web: gunicorn dbportal.wsgi
-
+web: gunicorn DBPortal.wsgi
