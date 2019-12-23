@@ -1,2 +1,2 @@
-web: gunicorn users:app
+web: gunicorn dbportal.wsgi
 
