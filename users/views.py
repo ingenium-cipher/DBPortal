@@ -237,7 +237,11 @@ def send_dber_email(request):
     if request.user.is_staff:
         global user_1
         global from_email
-        user_1 = StaffDetail.objects.get(staff_user=request.user)
+        try:
+            user_1 = StaffDetail.objects.get(staff_user=request.user)
+        except exceptions.ObjectDoesNotExist:
+            messages.warning(request, f'You are not registered for any city, please contact admin')
+            return redirect('home')
         from_email = user_1.email_address
 
     else:
