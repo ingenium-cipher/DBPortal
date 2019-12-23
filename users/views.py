@@ -41,10 +41,24 @@ def register_dber(request):
 
             wb = xlrd.open_workbook(loc)
             sheet = wb.sheet_by_index(0)
+            global state
+            global city
 
             for i in range(1, sheet.nrows):
-                state = get_model(sheet.cell_value(i, 4), State)
-                city = get_model(sheet.cell_value(i, 5), City)
+                try:
+                    state = get_model(sheet.cell_value(i, 4), State)
+                except exceptions.ObjectDoesNotExist:
+                    messages.warning(
+                        request, f'This state does not exist in database, contact admin')
+                    return redirect('register_dber')
+
+                try:
+                    city = get_model(sheet.cell_value(i, 5), City)
+                except exceptions.ObjectDoesNotExist:
+                    messages.warning(
+                        request, f'This state does not exist in database, contact admin')
+                    return redirect('register_dber')
+
                 DBerDetail.objects.create(aadhar_no=int(sheet.cell_value(i, 0)),
                                           name=sheet.cell_value(i, 1),
                                           DOB=str(xlrd.xldate_as_datetime(
