@@ -27,61 +27,60 @@ def register_dber(request):
     if request.method == 'POST':
         u_form = DBerDetailForm(request.POST)
         e_form = UserExcelForm(request.POST, request.FILES)
+        staff = StaffDetail.objects.get(staff_user=request.user)
         if u_form.is_valid():
             aadhar = u_form.cleaned_data.get('aadhar_no')
-            dber = DBerDetail.objects.get(aadhar_no=aadhar)
-            if dber:
+            try:
+                DBerDetail.objects.get(aadhar_no=aadhar)
                 messages.warning(request, f'A dber with this Aadhar no already exists!')
                 return redirect('register_dber')
-            u_form.save()
-            messages.success(request, f'DBer registered successfully!')
-            return redirect('home')
+            except exceptions.ObjectDoesNotExist:
+                if u_form.cleaned_data.get('city') == staff.city:
+                    u_form.save()
+                    messages.success(request, f'DBer registered successfully!')
+                    return redirect('home')
+                else:
+                    messages.warning(
+                        request, f'You are allowed to register dbers in your city only!')
+                    return redirect('register_dber')
 
         elif e_form.is_valid():
-            aadhar = e_form.cleaned_data.get('aadhar_no')
-            dber = DBerDetail.objects.get(aadhar_no=aadhar)
-            if dber:
-                messages.warning(request, f'A dber with this Aadhar no already exists!')
-                return redirect('register_dber')
-
             sa = e_form.save()
-            print(sa.file.url[6:])
-            print(MEDIA_ROOT)
-            # loc = ("/home/ayush/Desktop/github/DBPortal/DBPortal" + sa.file.url)
             loc = (MEDIA_ROOT + sa.file.url[6:])
 
             wb = xlrd.open_workbook(loc)
             sheet = wb.sheet_by_index(0)
-            global state
-            global city
 
             for i in range(1, sheet.nrows):
-                try:
-                    state = get_model(sheet.cell_value(i, 4), State)
-                except exceptions.ObjectDoesNotExist:
-                    messages.warning(
-                        request, f'This state does not exist in database, contact admin')
-                    return redirect('register_dber')
+
+                city_1 = City.objects.get(name=staff.city)
+                state = city_1.state
+                aadhar = int(sheet.cell_value(i, 0))
 
                 try:
-                    city = get_model(sheet.cell_value(i, 5), City)
-                except exceptions.ObjectDoesNotExist:
-                    messages.warning(
-                        request, f'This state does not exist in database, contact admin')
+                    DBerDetail.objects.get(aadhar_no=aadhar)
+                    messages.warning(request, f'Aadhar no { aadhar } already exists!')
                     return redirect('register_dber')
 
-                DBerDetail.objects.create(aadhar_no=int(sheet.cell_value(i, 0)),
-                                          name=sheet.cell_value(i, 1),
-                                          DOB=str(xlrd.xldate_as_datetime(
-                                              sheet.cell_value(i, 2), wb.datemode))[0:10],
-                                          gender=sheet.cell_value(i, 3),
-                                          state=state,
-                                          city=city)
+                except exceptions.ObjectDoesNotExist:
+                    DBerDetail.objects.create(aadhar_no=int(sheet.cell_value(i, 0)),
+                                              name=sheet.cell_value(i, 1),
+                                              DOB=str(xlrd.xldate_as_datetime(
+                                                  sheet.cell_value(i, 2), wb.datemode))[0:10],
+                                              gender=sheet.cell_value(i, 3),
+                                              state=state,
+                                              city=city_1)
 
-            messages.success(request, f'DBer registered successfully!')
-            return redirect('home')
+                messages.success(request, f'DBer registered successfully!')
+                return redirect('home')
 
     else:
+        try:
+            staff = StaffDetail.objects.get(staff_user=request.user)
+        except exceptions.ObjectDoesNotExist:
+            messages.warning(request, f'You are not registered for any city, please contact admin')
+            return redirect('home')
+
         u_form = DBerDetailForm()
         e_form = UserExcelForm()
     context = {
@@ -270,7 +269,6 @@ def send_dber_email(request):
 
         if 'sea' in request.POST:
             search = request.POST['search']
-            print(search)
 
             try:
                 global to_dber
@@ -337,7 +335,6 @@ def send_staff_email(request):
         elif 'sen' in request.POST:
             subject = request.POST['subject']
             message = request.POST['message']
-            print('hi')
             to_email.append(staff.email_address)
             send_mail(subject, message, from_email, to_email)
             messages.success(request, f'Email sent successfully!')
@@ -350,21 +347,26 @@ def send_staff_email(request):
 def profile(request):
 
     if request.user.is_staff:
-        user_1 = StaffDetail.objects.get(staff_user=request.user)
-        form = StaffProfileForm(instance=user_1)
-        context = {
-            'user_1': user_1,
-            'form': form,
-        }
+        try:
+            user_1 = StaffDetail.objects.get(staff_user=request.user)
+            form = StaffProfileForm(instance=user_1)
+            context = {
+                'user_1': user_1,
+                'form': form,
+            }
 
-        if request.method == 'POST':
+            if request.method == 'POST':
 
-            form = StaffProfileForm(request.POST, instance=user_1)
+                form = StaffProfileForm(request.POST, instance=user_1)
 
-            if form.is_valid():
-                form.save()
-                messages.success(request, f'Profile Updated successfully!')
-                return redirect('home')
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, f'Profile Updated successfully!')
+                    return redirect('home')
+        except exceptions.ObjectDoesNotExist:
+            messages.warning(
+                request, f'Your profile as staff is not complete, contact admin immediately')
+            return redirect('home')
 
     else:
         user_1 = DBerDetail.objects.get(user_detail=request.user)
