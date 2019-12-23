@@ -184,32 +184,38 @@ def change_password(request):
 
 
 def email(request):
-    staff = StaffDetail.objects.get(staff_user=request.user)
-    users = DBerDetail.objects.filter(linked=True, city=staff.city)
-    recipient_list = []
 
-    from_email = staff.email_address
+    try:
+        staff = StaffDetail.objects.get(staff_user=request.user)
+        users = DBerDetail.objects.filter(linked=True, city=staff.city)
+        recipient_list = []
 
-    if request.method == 'POST':
+        from_email = staff.email_address
 
-        subject = request.POST['subject']
-        message = request.POST['message']
-        checkbox = request.POST.getlist('checkbox')
-        checkbox = tuple(checkbox)
+        if request.method == 'POST':
 
-        for i in range(0, len(checkbox)):
-            recipient_list.append(checkbox[i])
+            subject = request.POST['subject']
+            message = request.POST['message']
+            checkbox = request.POST.getlist('checkbox')
+            checkbox = tuple(checkbox)
 
-        send_mail(subject, message, from_email, recipient_list)
-        messages.success(request, f'Emails sent successfully!')
+            for i in range(0, len(checkbox)):
+                recipient_list.append(checkbox[i])
+
+            send_mail(subject, message, from_email, recipient_list)
+            messages.success(request, f'Emails sent successfully!')
+            return redirect('home')
+
+        context = {
+            'users': users,
+            'from_email': from_email,
+            'staff': staff,
+        }
+        return render(request, 'email.html', context)
+
+    except exceptions.ObjectDoesNotExist:
+        messages.warning(request, f'You are not registered for any city, please contact admin')
         return redirect('home')
-
-    context = {
-        'users': users,
-        'from_email': from_email,
-        'staff': staff,
-    }
-    return render(request, 'email.html', context)
 
 
 def send_dber_email(request):
