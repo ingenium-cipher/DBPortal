@@ -90,6 +90,11 @@ def staff_login(request):
                 # return HttpResponse('<h1> You are not eligible to login as you are not a staff </h1> <br> <a href = "http://127.0.0.1:8000/"> Back to Home </a>')
                 messages.warning(request, f'You are not eligible to login as you are not staff')
                 return redirect('staff_login')
+
+        else:
+            messages.warning(request, f'Invalid Credentials!')
+            return redirect('staff_login')
+
     return render(request, 'login.html')
 
 
@@ -112,6 +117,11 @@ def dber_login(request):
                 # return HttpResponse('<h1> You are not eligible to login due to following reasons </h1> <br> <ul> <li> Maybe because you are not a dber </li> <li> Maybe you are not linked as dber </li> </ul> <a href = "http://127.0.0.1:8000/"> Back to Home </a>')
                 messages.warning(
                     request, f'You are not able to login maybe because you are not dber or not linked as dber.')
+
+        else:
+            messages.warning(request, f'Invalid Credentials!')
+            return redirect('dber_login')
+
     return render(request, 'login.html')
 
 
