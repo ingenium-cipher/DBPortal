@@ -1,2 +1,2 @@
-web: gunicorn DBPortal.wsgi --log-file -
+web: gunicorn users:app
 
